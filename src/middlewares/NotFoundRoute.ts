@@ -9,5 +9,6 @@ export const notFoundRoute = (req:Request, res:Response, next:NextFunction)=>{
         status:false,
         messsage: `${req.url} This Route Not Founded`
     })
+    next();
 
 }
