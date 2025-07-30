@@ -1,10 +1,14 @@
-import { Router } from "express";
-import { userControllers } from "./user.controller";
-import { userAuth } from "../../middlewares/CheckUserAuth";
 
+
+
+
+import { Router } from "express";
+
+import { userAuth } from "../../middlewares/CheckUserAuth";
+import { authController } from "./auth.controller";
 const router = Router();
 
-router.post("/create-user", userControllers.createUser);
+router.post('/login-user',userAuth,authController.logINUser );
 
 
 

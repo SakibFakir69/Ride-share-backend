@@ -6,7 +6,7 @@
 // stack error whice file comes error
 
 import express, { Request, Response } from "express";
-import { email, z } from "zod";
+import { email, json, z } from "zod";
 import { User } from "./user.model";
 import {
   AccountStatus,
@@ -15,7 +15,9 @@ import {
   IUser,
   Role,
 } from "./user.interface";
-import { any } from "joi";
+import bcrpytjs from "bcryptjs";
+import { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 // user create
 
@@ -44,6 +46,16 @@ const createUser = async (req: Request, res: Response) => {
 
   try {
     const result = userZodValidationTest.parse(req.body);
+    // already check account
+
+    const isUserxits = await User.findOne({ email: result.email });
+
+    if (isUserxits) {
+      res.status(400).json({
+        status: false,
+        message: "User Already Exits",
+      });
+    }
 
     if (!result) {
       res.status(404).json({
@@ -52,7 +64,14 @@ const createUser = async (req: Request, res: Response) => {
       });
     }
 
-    const user = await User.create(result);
+    const hashPassword = await bcrpytjs.hash(result.password, 10);
+
+    const newUser = {
+      ...result,
+      password: hashPassword,
+    };
+
+    const user = await User.create(newUser);
 
     res.status(201).json({
       status: true,
@@ -70,11 +89,7 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 
-
-
-
-
-
 export const userControllers = {
   createUser,
+
 };
