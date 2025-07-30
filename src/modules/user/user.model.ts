@@ -47,10 +47,12 @@ const UserSchema = new Schema<IUser>(
       enum: Object.values(AccountStatus),
       default: AccountStatus.UNBLOCK,
     },
+
+    // deleete
     driver_status: {
       type: String,
       enum: Object.values(DriverStatus),
-      default: DriverStatus.APPROVED,
+      default: DriverStatus.PENDING,
     },
   },
 

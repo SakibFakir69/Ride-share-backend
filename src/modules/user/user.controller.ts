@@ -35,7 +35,7 @@ const userZodValidationTest = z.object({
     .default(AccountStatus.UNBLOCK),
   driver_status: z
     .enum(Object.values(DriverStatus))
-    .default(DriverStatus.APPROVED),
+    .default(DriverStatus.NONE),
 });
 
 const createUser = async (req: Request, res: Response) => {

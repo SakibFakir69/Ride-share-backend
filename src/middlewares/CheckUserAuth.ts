@@ -3,6 +3,7 @@ import { any } from "joi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const userAuth = (req: Request, res: Response, next: NextFunction) => {
+
   const token = req.headers.authorization;
   console.log(token, " token");
 
@@ -18,7 +19,8 @@ export const userAuth = (req: Request, res: Response, next: NextFunction) => {
       token as string,
       "secrect_key"
     ) as JwtPayload;
-    (req as any).user = decodeToken;
+    
+    (req as any).user = decodeToken.payload;
 
     next();
   } catch (error) {
