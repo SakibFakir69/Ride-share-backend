@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { User } from "../user/user.model";
 import { AccountStatus, DriverStatus, Role } from "../user/user.interface";
 import { Rides } from "./ride.model";
-import { PaymentStatus, RiderStatus } from "./ride.interface";
+import { PaymentStatus, RideStatus } from "./ride.interface";
 import { JwtPayload } from "jsonwebtoken";
 
 const rideRequest = async (req: Request, res: Response) => {
@@ -10,13 +10,13 @@ const rideRequest = async (req: Request, res: Response) => {
     const { destination, pickup } = req.body;
     console.log(req.body, " req");
 
-    // if (!destination || !pickup) {
-    //   return res.status(400).json({
-    //     status: false,
-    //     message: "Fill The Input Right Way",
-    //   });
-    // }
-    // driver match
+    if (!destination || !pickup) {
+      return res.status(400).json({
+        status: false,
+        message: "Fill The Input Right Way",
+      });
+    }
+  
 
     const oneDriver = await User.findOne({ role: Role.DRIVER });
 
@@ -42,7 +42,7 @@ const rideRequest = async (req: Request, res: Response) => {
       destination: destination,
       pick_up_location: pickup,
       payment_status: PaymentStatus.UNPAID,
-      rider_status: RiderStatus.REQUESTED,
+      rider_status:RideStatus.PENDING,
       driver_status: DriverStatus.NONE,
     });
 
@@ -81,7 +81,7 @@ const rideCancel = async (req: Request, res: Response) => {
       });
     }
 
-    if (latestRide.rider_status === RiderStatus.CANCELLED) {
+    if (latestRide.rider_status === RideStatus.CANCELLED) {
       return res.status(200).json({
         status: true,
         message: "Ride Allready Cancled",
@@ -91,7 +91,7 @@ const rideCancel = async (req: Request, res: Response) => {
     // if driver recive you can not cancel
   
 
-    if(latestRide.driver_status===DriverStatus.ACCPET){
+    if(latestRide.driver_status===DriverStatus.ACCEPT){
       return res.status(400).json({
         status:true,
         message:"You Can Not Cancel Ride"
@@ -101,9 +101,9 @@ const rideCancel = async (req: Request, res: Response) => {
 
 
     //  save
-    latestRide.rider_status=RiderStatus.CANCELLED;
+    latestRide.rider_status=RideStatus.CANCELLED;
 
-
+      await latestRide.save();
 
     return res.status(200).json({
       status: true,
@@ -127,7 +127,9 @@ const allRide = async (req: Request, res: Response) => {
 
     console.log(id, " me ");
 
-    const allData = await Rides.find({ rider_id: id });
+    const allData = await Rides.find({ rider_id: id , rider_status:{$ne:RideStatus.CANCELLED} });
+
+
     console.log(id, allData);
 
     if (!allData) {

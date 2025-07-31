@@ -5,6 +5,7 @@ import {
   PaymentStatus,
   RideStatus,
 } from "./ride.interface";
+import { AvailabilityStatus } from "../user/user.interface";
 
 const LocationSchema = new Schema(
   {
@@ -51,6 +52,7 @@ const rideSchema = new Schema<IRiderRequest>(
     driver_status: {
       type: String,
       enum: Object.values(DriverStatus),
+      
     },
     pick_up_location: {
       type: LocationSchema,
@@ -60,6 +62,10 @@ const rideSchema = new Schema<IRiderRequest>(
       type: Boolean,
       default: false,
     },
+    availability_status:{
+      type:String,
+      enum:Object.values(AvailabilityStatus.ONLINE)
+    }
   },
 
   { timestamps: true }

@@ -7,8 +7,8 @@ import { userRoleCheck } from "../../middlewares/UserRoleCheck";
 const router = Router();
 
 
-
-router.patch('/permission',userAuth,userRoleCheck.driverCheck,  driverController.requestPermission)
+// driver routes
+router.patch('/request',userAuth,userRoleCheck.driverCheck,  driverController.requestPermission)
 router.patch('/ride/status', userAuth,userRoleCheck.driverCheck, driverController.rideStatus);
 router.get('/earning',userAuth,userRoleCheck.driverCheck, driverController.earningHistory );
 router.patch('/online-status', userAuth,userRoleCheck.driverCheck, driverController.onlineStatus);

@@ -8,7 +8,7 @@ import { userAuth } from "../../middlewares/CheckUserAuth";
 import { authController } from "./auth.controller";
 const router = Router();
 
-router.post('/login-user',userAuth,authController.logINUser );
+router.post('/login-user',authController.logINUser );
 
 
 

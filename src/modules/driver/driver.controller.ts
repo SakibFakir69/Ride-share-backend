@@ -2,17 +2,20 @@ import express, { Request, Response } from "express";
 import { Rides } from "../ride/ride.model";
 import { DriverStatus, RideStatus } from "../ride/ride.interface";
 import { User } from "../user/user.model";
-import { availableMemory } from "process";
+
 import { AvailabilityStatus } from "../user/user.interface";
 
 const requestPermission = async (req: Request, res: Response) => {
   const user = req.user;
 
+
+
   try {
-    const { ACCPET, REJECT } = req.body;
+    const status = req.body;
+    console.log(req.body,  " accpeet  or reject ")
 
     const id = user.id;
-    const lastestDrive = await Rides.findOne({ driver_id: id }).sort({
+    const lastestDrive = await Rides.findOne({ driver_id:id }).sort({
       createdAt: -1,
     });
 
@@ -23,14 +26,14 @@ const requestPermission = async (req: Request, res: Response) => {
       });
     }
     // mangae reject on rider
-    if (REJECT) {
+    if (!status) {
       return res.status(400).json({
         status: false,
-        message: "Request Reject",
+        message: "Accpet or Reject",
       });
     }
 
-    lastestDrive.driver_status = ACCPET;
+    lastestDrive.driver_status =status.driver_status ;
 
     await lastestDrive.save();
 
@@ -57,7 +60,7 @@ const rideStatus = async (req: Request, res: Response) => {
     const status = await Rides.findOne({ driver_id: id }).sort({
       createdAt: -1,
     });
-
+    console.log(id , status);
     if (!status) {
       return res.status(404).json({
         status: false,
@@ -66,6 +69,7 @@ const rideStatus = async (req: Request, res: Response) => {
     }
 
     const { status_update } = req.body;
+    console.log(status_update , status , " status ");
 
     if (!status_update) {
       return res.status(400).json({
@@ -74,7 +78,7 @@ const rideStatus = async (req: Request, res: Response) => {
       });
     }
 
-    status.rider_status = status_update;
+    status.rider_status = status_update.rider_status;
     await status.save();
 
     return res.status(201).json({
@@ -125,11 +129,13 @@ const earningHistory = async (req: Request, res: Response) => {
 
 const onlineStatus = async (req: Request, res: Response) => {
   const user = req.user;
-
+    const { user_status } = req.body;
   try {
     const id = user.id;
 
-    const user_data = await User.findById(id);
+    const user_data = await User.findByIdAndUpdate(id,{
+      availability_status:user_status
+    },{new:true});
 
     if (!user_data) {
       return res.status(404).json({
@@ -137,17 +143,19 @@ const onlineStatus = async (req: Request, res: Response) => {
         message: "User Not founded",
       });
     }
-    const { user_status } = req.body;
-    user_data.availability_status = user_status;
+
+    console.log(user_status);
+
+    // user_data.availability_status = user_status;
 
     await user_data.save();
 
     return res.status(201).json({
-      status: false,
+      status: true,
       message: "User Status Update",
       data: user_data,
     });
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
     return res.status(500).json({
       status: false,

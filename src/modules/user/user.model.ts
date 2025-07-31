@@ -54,6 +54,12 @@ const UserSchema = new Schema<IUser>(
       enum: Object.values(DriverStatus),
       default: DriverStatus.PENDING,
     },
+    account:{
+      type: String,
+      enum: Object.values(AccountStatus),
+      default: AccountStatus.UNBLOCK,
+
+    }
   },
 
   { timestamps: true }

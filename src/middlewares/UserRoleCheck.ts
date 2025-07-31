@@ -77,10 +77,30 @@ const driverCheck = (req: AuthRequest, res: Response, next: NextFunction) => {
 // admin check
 const adminCheck = (req: AuthRequest, res: Response, next: NextFunction) => {
   const user = req.user;
+
+  console.log(user, " user");
+
+  if (!user) {
+    return res.status(401).json({
+      status: false,
+      message: "Unauthorized: No user info found.",
+    });
+  }
+
+  if (user?.role !== Role.ADMIN) {
+    return res.status(401).json({
+      status: false,
+      message: "Access denied: Only Admin can access this route.",
+    });
+  }
+
+ 
+
+  next();
 };
 
 
 
 export const userRoleCheck = {
-    riderCheck,driverCheck
+    riderCheck,driverCheck,adminCheck
 }

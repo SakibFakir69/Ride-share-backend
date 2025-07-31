@@ -12,22 +12,26 @@ export enum AvailabilityStatus {
 export enum AccountStatus {
   BLOCK = "BLOCK",
   UNBLOCK = "UNBLOCK",
+  
 }
 
 export enum  Account_status {
   APPROVED = "APPROVED",
   SUSPEND = "SUSPEND",
+  BLOCK = "BLOCK",
+  UNBLOCK = "UNBLOCK",
 }
 
 export enum DriverStatus{
   REJECT="REJECT",
-  ACCPET="ACCPET",
+    ACCEPT = "ACCEPT", 
   PENDING="PENDING",
   NONE="NONE"
 
 }
 
 export enum Status {
+  
 
 }
 
@@ -42,8 +46,10 @@ export interface IUser {
 
   availability_status?: AvailabilityStatus;
 
-  account_status?: AccountStatus;
+  account_status?: Account_status;
 
   driver_status?: DriverStatus;
+  account:AccountStatus;
+
  
 }
