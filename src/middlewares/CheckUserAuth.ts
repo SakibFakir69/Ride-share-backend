@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { any } from "joi";
+
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 export const userAuth = (req: Request, res: Response, next: NextFunction) => {

@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { any } from "joi";
-import jwt, { JwtPayload } from "jsonwebtoken";
+
 import { AccountStatus, Role } from "../modules/user/user.interface";
 
 interface AuthRequest extends Request {

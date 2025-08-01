@@ -5,14 +5,13 @@
 
 // stack error whice file comes error
 
-import express, { Request, Response } from "express";
-import { email, json, z } from "zod";
+import  { Request, Response } from "express";
+
 import { User } from "../user/user.model";
 
 import bcrpytjs from "bcryptjs";
 import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
-import { log } from "console";
 
 
  const logINUser = async (req: Request, res: Response) => {

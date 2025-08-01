@@ -1,14 +1,76 @@
-import express, { Request, Response } from "express";
+import  { Request, Response } from "express";
 import { User } from "../user/user.model";
-import { AccountStatus, DriverStatus, Role } from "../user/user.interface";
+import { AccountStatus, DriverStatus, IUser, Role } from "../user/user.interface";
 import { Rides } from "./ride.model";
 import { PaymentStatus, RideStatus } from "./ride.interface";
-import { JwtPayload } from "jsonwebtoken";
+
+type AuthenticatedRequest = Request & { user: IUser };
+
+
+
+// const rideRequest = async (req:AuthenticatedRequest, res: Response) => {
+  
+//   try {
+//     const { destination, pickup } = req.body;
+//     console.log(req.body, " req");
+
+//     if (!destination || !pickup) {
+//       return res.status(400).json({
+//         status: false,
+//         message: "Fill The Input Right Way",
+//       });
+//     }
+  
+
+//     const oneDriver = await User.findOne({ role: Role.DRIVER });
+
+//     if (!oneDriver || oneDriver.account_status === AccountStatus.BLOCK) {
+//       return res.status(404).json({
+//         status: false,
+//         message: "Not Founded Driver",
+//       });
+//     }
+
+//     const id = req.user.id ;
+//     console.log(id, " id ");
+//     // if driver staus .in tranis === not snd data and snd wating list
+
+//     //
+//     const rideRequest = await Rides.create({
+//       rider_id: id,
+
+//       driver_id: oneDriver._id, // match driver here
+//       fare: 100,
+//       location: pickup,
+//       destination: destination,
+//       pick_up_location: pickup,
+//       payment_status: PaymentStatus.UNPAID,
+//       rider_status:RideStatus.PENDING,
+//       driver_status: DriverStatus.NONE,
+//     });
+
+//     return res.status(200).json({
+//       status: true,
+//       message: "Driver founded",
+//       data: oneDriver,
+//       deatils: rideRequest,
+//     });
+//   } catch (error: any) {
+//     res.status(500).json({
+//       status: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+// ride cancel
+
 
 const rideRequest = async (req: Request, res: Response) => {
+  const authReq = req as Request & { user: IUser };
+
   try {
     const { destination, pickup } = req.body;
-    console.log(req.body, " req");
 
     if (!destination || !pickup) {
       return res.status(400).json({
@@ -16,7 +78,6 @@ const rideRequest = async (req: Request, res: Response) => {
         message: "Fill The Input Right Way",
       });
     }
-  
 
     const oneDriver = await User.findOne({ role: Role.DRIVER });
 
@@ -27,22 +88,17 @@ const rideRequest = async (req: Request, res: Response) => {
       });
     }
 
-    const id = req.user.id as string;
-    console.log(id, " id ");
+    const id = authReq.user.id; // Now no TS error
 
-    // if driver staus .in tranis === not snd data and snd wating list
-
-    //
     const rideRequest = await Rides.create({
       rider_id: id,
-
-      driver_id: oneDriver._id, // match driver here
+      driver_id: oneDriver._id,
       fare: 100,
       location: pickup,
-      destination: destination,
+      destination,
       pick_up_location: pickup,
       payment_status: PaymentStatus.UNPAID,
-      rider_status:RideStatus.PENDING,
+      rider_status: RideStatus.PENDING,
       driver_status: DriverStatus.NONE,
     });
 
@@ -50,7 +106,7 @@ const rideRequest = async (req: Request, res: Response) => {
       status: true,
       message: "Driver founded",
       data: oneDriver,
-      deatils: rideRequest,
+      details: rideRequest,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -60,7 +116,6 @@ const rideRequest = async (req: Request, res: Response) => {
   }
 };
 
-// ride cancel
 
 const rideCancel = async (req: Request, res: Response) => {
   const userId = req.params.id;
@@ -71,7 +126,7 @@ const rideCancel = async (req: Request, res: Response) => {
       createdAt: -1,
     });
 
-    console.log(latestRide);
+    console.log(latestRide, " ride ");
 
     if (!latestRide) {
       return res.status(404).json({
@@ -121,21 +176,69 @@ const rideCancel = async (req: Request, res: Response) => {
 
 // my all ride
 
+// const allRide = async (req:AuthenticatedRequest, res: Response) => {
+//   try {
+//     const id = req.user.id;
+
+//     console.log(id, " me ");
+
+//     const allData = await Rides.find({ rider_id: id , rider_status:{$ne:RideStatus.CANCELLED} });
+
+
+//     console.log(id, allData);
+
+//     if (!allData) {
+//       return res.status(404).json({
+//         status: false,
+//         messsage: "User Data Not Founded",
+//       });
+//     }
+
+//     const count = await Rides.countDocuments({ rider_id: id });
+
+//     const totalCost = await Rides.aggregate([
+//       { $match: { rider_id: id } },
+
+//       { $group: { _id: id, totalFare: { $sum: "$fare" } } },
+//       { $project: { _id: false, totalFare: true } },
+//     ]);
+
+//     return res.json({
+//       status: true,
+//       message: "Ride History",
+//       data: allData,
+//       meta: {
+//         count: count,
+//         totalCost: totalCost,
+//       },
+//     });
+//   } catch (error: any) {
+//     console.log(error);
+//     res.status(500).json({
+//       status: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
+
 const allRide = async (req: Request, res: Response) => {
   try {
-    const id = req.user.id;
+    // Cast here to assert `user` exists on req
+    const authReq = req as Request & { user: IUser };
+
+    const id = authReq.user.id;
 
     console.log(id, " me ");
 
-    const allData = await Rides.find({ rider_id: id , rider_status:{$ne:RideStatus.CANCELLED} });
-
+    const allData = await Rides.find({ rider_id: id, rider_status: { $ne: RideStatus.CANCELLED } });
 
     console.log(id, allData);
 
     if (!allData) {
       return res.status(404).json({
         status: false,
-        messsage: "User Data Not Founded",
+        messsage: "User Data Not Found",
       });
     }
 
@@ -143,7 +246,6 @@ const allRide = async (req: Request, res: Response) => {
 
     const totalCost = await Rides.aggregate([
       { $match: { rider_id: id } },
-
       { $group: { _id: id, totalFare: { $sum: "$fare" } } },
       { $project: { _id: false, totalFare: true } },
     ]);
@@ -153,8 +255,8 @@ const allRide = async (req: Request, res: Response) => {
       message: "Ride History",
       data: allData,
       meta: {
-        count: count,
-        totalCost: totalCost,
+        count,
+        totalCost,
       },
     });
   } catch (error: any) {
@@ -165,6 +267,7 @@ const allRide = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 export const rideControllers = {
   rideRequest,

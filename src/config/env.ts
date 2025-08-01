@@ -8,11 +8,7 @@ interface EnvConfig {
   NODE_ENV: string;
 }
 
-const envVars: EnvConfig = {
-  PORT: process.env.PORT as string,
-  MONGODB_URL: process.env.MONGODB_URL as string,
-  NODE_ENV: process.env.NODE_ENV as string,
-};
+
 
 export const loadEnvVariable = (): EnvConfig => {
   const requiredEnv: string[] = ["NODE_ENV", "MONGODB_URL", "PORT"];

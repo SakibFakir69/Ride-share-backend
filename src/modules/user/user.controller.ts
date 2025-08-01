@@ -5,19 +5,18 @@
 
 // stack error whice file comes error
 
-import express, { Request, Response } from "express";
-import { email, json, z } from "zod";
+import  { Request, Response } from "express";
+import {  z } from "zod";
 import { User } from "./user.model";
 import {
   AccountStatus,
   AvailabilityStatus,
   DriverStatus,
-  IUser,
+
   Role,
 } from "./user.interface";
 import bcrpytjs from "bcryptjs";
-import { JwtPayload } from "jsonwebtoken";
-import jwt from "jsonwebtoken";
+
 
 // user create
 

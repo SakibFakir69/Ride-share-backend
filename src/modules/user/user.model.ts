@@ -1,16 +1,12 @@
-import { string } from "joi";
-import mongoose, { model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import {
   AccountStatus,
+  Account_status, 
   AvailabilityStatus,
   DriverStatus,
   IUser,
   Role,
 } from "./user.interface";
-
-
-// add another model store , history , earn, status , rate , 
-// rider , driver
 
 
 const UserSchema = new Schema<IUser>(
@@ -26,12 +22,11 @@ const UserSchema = new Schema<IUser>(
     password: {
       type: String,
       required: true,
-      min: [6, "To small"],
+      min: [6, "Too short"],
     },
     phone: {
       type: Number,
     },
-
     role: {
       type: String,
       enum: Object.values(Role),
@@ -44,26 +39,21 @@ const UserSchema = new Schema<IUser>(
     },
     account_status: {
       type: String,
-      enum: Object.values(AccountStatus),
-      default: AccountStatus.UNBLOCK,
+      enum: Object.values(AccountStatus), // ✅ fixed enum
+      default: Account_status.APPROVED,
     },
-
-    // deleete
     driver_status: {
       type: String,
       enum: Object.values(DriverStatus),
       default: DriverStatus.PENDING,
     },
-    account:{
+    account: {
       type: String,
-      enum: Object.values(AccountStatus),
+      enum: Object.values(Account_status),
       default: AccountStatus.UNBLOCK,
-
-    }
+    },
   },
-
   { timestamps: true }
 );
 
-
-export const User = model<IUser>("users", UserSchema);
+export const User = model<IUser>("user",UserSchema);

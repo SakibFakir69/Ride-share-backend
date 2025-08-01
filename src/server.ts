@@ -7,8 +7,7 @@ import { loadEnvVariable } from "./config/env";
 const PORT = loadEnvVariable().PORT;
 const DB_URL = loadEnvVariable().MONGODB_URL;
 
-// server connection
-let Server;
+
 
 (async function (url) {
   // recive parameter as url
@@ -17,7 +16,7 @@ let Server;
     await mongoose.connect(url);
     console.log("DB CONNECTED");
 
-    Server = app.listen(PORT, () => {
+     app.listen(PORT, () => {
       console.log(`server runing on this port ${PORT}`);
     });
   } catch (error) {

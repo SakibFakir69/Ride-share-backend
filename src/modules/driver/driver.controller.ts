@@ -1,21 +1,25 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { Rides } from "../ride/ride.model";
-import { DriverStatus, RideStatus } from "../ride/ride.interface";
-import { User } from "../user/user.model";
 
-import { AvailabilityStatus } from "../user/user.interface";
+import { User } from "../user/user.model";
+import { IUser } from "../user/user.interface";
+
+interface AuthenticatedRequest extends Request {
+  user?: IUser;
+}
 
 const requestPermission = async (req: Request, res: Response) => {
-  const user = req.user;
-
-
+  const user = (req as AuthenticatedRequest).user;
 
   try {
     const status = req.body;
-    console.log(req.body,  " accpeet  or reject ")
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const id = user.id;
-    const lastestDrive = await Rides.findOne({ driver_id:id }).sort({
+
+    const lastestDrive = await Rides.findOne({ driver_id: id }).sort({
       createdAt: -1,
     });
 
@@ -33,7 +37,7 @@ const requestPermission = async (req: Request, res: Response) => {
       });
     }
 
-    lastestDrive.driver_status =status.driver_status ;
+    lastestDrive.driver_status = status.driver_status;
 
     await lastestDrive.save();
 
@@ -52,15 +56,15 @@ const requestPermission = async (req: Request, res: Response) => {
 };
 
 const rideStatus = async (req: Request, res: Response) => {
-  const user = req.user;
+  const user = (req as AuthenticatedRequest).user;
 
   try {
-    const id = user.id;
+    const id = user?.id ;
 
     const status = await Rides.findOne({ driver_id: id }).sort({
       createdAt: -1,
     });
-    console.log(id , status);
+    console.log(id, status);
     if (!status) {
       return res.status(404).json({
         status: false,
@@ -69,7 +73,7 @@ const rideStatus = async (req: Request, res: Response) => {
     }
 
     const { status_update } = req.body;
-    console.log(status_update , status , " status ");
+    console.log(status_update, status, " status ");
 
     if (!status_update) {
       return res.status(400).json({
@@ -97,7 +101,10 @@ const rideStatus = async (req: Request, res: Response) => {
 };
 
 const earningHistory = async (req: Request, res: Response) => {
-  const user = req.user;
+  const user = (req as AuthenticatedRequest).user;
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
   try {
     const id = user.id;
@@ -128,14 +135,22 @@ const earningHistory = async (req: Request, res: Response) => {
 };
 
 const onlineStatus = async (req: Request, res: Response) => {
-  const user = req.user;
-    const { user_status } = req.body;
+  const user = (req as AuthenticatedRequest).user;
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { user_status } = req.body;
   try {
     const id = user.id;
 
-    const user_data = await User.findByIdAndUpdate(id,{
-      availability_status:user_status
-    },{new:true});
+    const user_data = await User.findByIdAndUpdate(
+      id,
+      {
+        availability_status: user_status,
+      },
+      { new: true }
+    );
 
     if (!user_data) {
       return res.status(404).json({
@@ -155,7 +170,7 @@ const onlineStatus = async (req: Request, res: Response) => {
       message: "User Status Update",
       data: user_data,
     });
-  } catch (error:any) {
+  } catch (error: any) {
     console.log(error);
     return res.status(500).json({
       status: false,

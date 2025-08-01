@@ -89,7 +89,10 @@ const updateDriverStatus =async (req: Request, res: Response)=>{
   try{
 
     const userId = req.params.id as string;
-    const {status }= req.body;
+    const {account_status }= req.body;
+    console.log( req.body);
+
+
     if(!userId)
     {
       return res.status(404).json({
@@ -98,14 +101,14 @@ const updateDriverStatus =async (req: Request, res: Response)=>{
       })
 
     }
-    if(!status){
+    if(!account_status){
       return res.status(404).json({
         status:false,
         message:"Enter your status"
       })
     }
 
-    const userupdateStatus = await User.findByIdAndUpdate(userId,{account_status:status},{
+    const userupdateStatus = await User.findByIdAndUpdate(userId,{account_status:account_status},{
       new:true
     } )
 
@@ -137,7 +140,7 @@ const update_Account =async (req: Request, res: Response)=>{
   try{
 
     const userId = req.params.id as string;
-    const {status }= req.body;
+    const {account }= req.body;
     if(!userId)
     {
       return res.status(404).json({
@@ -146,14 +149,14 @@ const update_Account =async (req: Request, res: Response)=>{
       })
 
     }
-    if(!status){
+    if(!account){
       return res.status(404).json({
         status:false,
         message:"Enter your status"
       })
     }
 
-    const userupdateStatus = await User.findByIdAndUpdate(userId,{account:status},{
+    const userupdateStatus = await User.findByIdAndUpdate(userId,{account:account},{
       new:true
     } )
 

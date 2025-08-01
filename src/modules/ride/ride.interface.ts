@@ -1,6 +1,6 @@
 // ja ride request diba tr collection id
 
-import { number } from "joi";
+
 import { AvailabilityStatus } from "../user/user.interface";
 
 export enum VehicleType {
@@ -45,7 +45,7 @@ export interface IRiderRequest {
   driver_id?: string;
   fare: number;
   location?: ILocation;
-  destiation?: ILocation;
+    destination?: ILocation;
   vehicle?: VehicleType;
   payment_status?: PaymentStatus;
   rider_status?: RideStatus;

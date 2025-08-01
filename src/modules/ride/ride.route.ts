@@ -1,6 +1,5 @@
-import { email } from "zod";
-import { AccountStatus, Role } from "./../user/user.interface";
-import { Request, Response, Router } from "express";
+
+import {  Router } from "express";
 import { userAuth } from "../../middlewares/CheckUserAuth";
 import { userRoleCheck } from "../../middlewares/UserRoleCheck";
 import { rideControllers } from "./ride.controller";
