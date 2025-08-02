@@ -1,4 +1,4 @@
-Dive into the RideShare Backend, a vibrant and powerful API driving a cutting-edge ride-sharing platform. Crafted with Node.js, Express, TypeScript, and MongoDB, this backend delivers secure, scalable, and colorful APIs for riders, drivers, and admins to power a seamless ride-sharing adventure.
+ 🚘 Dive into the RideShare Backend, a vibrant and powerful API driving a cutting-edge ride-sharing platform. Crafted with Node.js, Express, TypeScript, and MongoDB, this backend delivers secure, scalable, and colorful APIs for riders, drivers, and admins to power a seamless ride-sharing adventure.
 
 
 
