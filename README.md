@@ -1,9 +1,9 @@
- 🚘 Dive into the RideShare Backend, a vibrant and powerful API driving a cutting-edge ride-sharing platform. Crafted with Node.js, Express, TypeScript, and MongoDB, this backend delivers secure, scalable, and colorful APIs for riders, drivers, and admins to power a seamless ride-sharing adventure.
+ 🚗 Dive into the RideShare Backend, a vibrant and powerful API driving a cutting-edge ride-sharing platform. Crafted with Node.js, Express, TypeScript, and MongoDB, this backend delivers secure, scalable, and colorful APIs for riders, drivers, and admins to power a seamless ride-sharing adventure.
 
 
 
  
- Rider Api Endpoint
+ # Rider Api Endpoint
 
 Request a ride with pickup & destination location
   Post  http://localhost:5000/api/ride-share/ride/request
@@ -11,7 +11,7 @@ Patch  http://localhost:5000/api/ride-share/ride/688a2f009fe200d6c9e5b1ba/status
 Get    http://localhost:5000/api/ride-share/ride/me
 
 
-Driver api EndPoint
+# Driver api EndPoint
 
 Accept/reject ride requests
 Patch http://localhost:5000/api/ride-share/drivers/request
@@ -26,7 +26,7 @@ Patch   http://localhost:5000/api/ride-share/drivers/ride/status
 Set availability status (Online/Offline)
 Patch  http://localhost:5000/api/ride-share/drivers/online-status
 
-Admin Api Endpoint 
+#Admin Api Endpoint 
 
 
 ` All Driver ` 
