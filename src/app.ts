@@ -19,7 +19,7 @@ app.use(cookieParser());
 // cors 
 
 app.use(cors({
-    origin:['http://localhost:5173','https://ride-bha-2-exogp2bch-sakibfakirs-projects.vercel.app'],
+    origin:['http://localhost:5173','https://ride-bha-2-exogp2bch-sakibfakirs-projects.vercel.app',"https://ride-bhai.netlify.app"],
     credentials:true,
 }))
 // route
