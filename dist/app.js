@@ -16,9 +16,17 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
+const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 // middleware
 app.use(express_1.default.json()); // plain text convert to json 
+app.use((0, cookie_parser_1.default)());
+// cors 
+app.use((0, cors_1.default)({
+    origin: ['http://localhost:5173'],
+    credentials: true,
+}));
 // route
 app.use('/api/ride-share', routes_1.default);
 // test route

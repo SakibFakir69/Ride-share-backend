@@ -5,7 +5,7 @@ import {
   PaymentStatus,
   RideStatus,
 } from "./ride.interface";
-import { AvailabilityStatus } from "../user/user.interface";
+import { AvailabilityStatus, IUser } from "../user/user.interface";
 
 const LocationSchema = new Schema(
   {
@@ -32,14 +32,10 @@ const rideSchema = new Schema<IRiderRequest>(
       type: Number,
       required: true,
     },
-    location: {
-      type: LocationSchema,
-      required: true,
-    },
-    destination: {
-      type: LocationSchema,
-      required: true,
-    },
+       current: { type: String, required: true },      // starting location
+    destination: { type: String, required: true },
+
+
     payment_status: {
       type: String,
       enum: Object.values(PaymentStatus),
@@ -54,10 +50,10 @@ const rideSchema = new Schema<IRiderRequest>(
       enum: Object.values(DriverStatus),
       
     },
-    pick_up_location: {
-      type: LocationSchema,
-      required: true,
-    },
+    // pick_up_location: {
+    //   type: LocationSchema,
+    //   required: true,
+    // },
     isCompleteRide: {
       type: Boolean,
       default: false,
@@ -72,9 +68,26 @@ const rideSchema = new Schema<IRiderRequest>(
 );
 
 
+// rideSchema.pre('findOneAndUpdate', function(next){
+
+//   console.log("Pre save hook run");
+
+//   console.log(this.user);
+//   console.log(this);
+
+
+//   next();
+
+// })
+
 
 // pre save 
 // function driver ar details
+
+
+
+
+
 
 
 

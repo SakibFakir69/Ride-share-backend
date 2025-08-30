@@ -20,6 +20,7 @@ exports.authController = void 0;
 const user_model_1 = require("../user/user.model");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const setCookies_1 = require("../../utils/setCookies");
 const logINUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // clear cookies
     const { email, password } = req.body;
@@ -44,15 +45,74 @@ const logINUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         role: isUserxits === null || isUserxits === void 0 ? void 0 : isUserxits.role,
         password: isUserxits === null || isUserxits === void 0 ? void 0 : isUserxits.password,
     };
-    const token = jsonwebtoken_1.default.sign({ payload }, "secrect_key", {
+    console.log(payload, " auth payload ");
+    const accessToken = jsonwebtoken_1.default.sign({ payload }, "secrect_key", {
         expiresIn: "1d",
     });
+    const refreshToken = jsonwebtoken_1.default.sign({ payload }, "refresh_key", {
+        expiresIn: "1d",
+    });
+    const token = {
+        accessToken,
+        refreshToken,
+    };
+    console.log(token, " auth token ");
+    (0, setCookies_1.setAuthCookie)(res, token);
+    /// res.cookies("acces".{});
+    console.log("set cookies");
     res.status(201).json({
         status: true,
         message: "User Login Successfull and Token Created",
-        token: token,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
     });
 });
+const getMe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        console.log(user, " user ");
+        if (!user) {
+            return res
+                .status(401)
+                .json({ status: false, message: "User unAuthorize" });
+        }
+        const userInfo = yield user_model_1.User.findById(user === null || user === void 0 ? void 0 : user.id);
+        return res.status(200).json({
+            status: true,
+            message: "User info fetch successfully",
+            data: userInfo,
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+// logout
+const logoutUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        });
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        });
+        return res.status(200).json({
+            status: true,
+            message: "Log out successfully"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Faild to logout"
+        });
+    }
+});
 exports.authController = {
-    logINUser
+    logINUser,
+    getMe, logoutUser,
 };

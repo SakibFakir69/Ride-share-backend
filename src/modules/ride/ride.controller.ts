@@ -1,15 +1,19 @@
-import  { Request, Response } from "express";
+import { Request, Response } from "express";
 import { User } from "../user/user.model";
-import { AccountStatus, DriverStatus, IUser, Role } from "../user/user.interface";
+import {
+  AccountStatus,
+  AvailabilityStatus,
+  DriverStatus,
+  IUser,
+  Role,
+} from "../user/user.interface";
 import { Rides } from "./ride.model";
 import { PaymentStatus, RideStatus } from "./ride.interface";
 
 type AuthenticatedRequest = Request & { user: IUser };
 
-
-
 // const rideRequest = async (req:AuthenticatedRequest, res: Response) => {
-  
+
 //   try {
 //     const { destination, pickup } = req.body;
 //     console.log(req.body, " req");
@@ -20,7 +24,6 @@ type AuthenticatedRequest = Request & { user: IUser };
 //         message: "Fill The Input Right Way",
 //       });
 //     }
-  
 
 //     const oneDriver = await User.findOne({ role: Role.DRIVER });
 
@@ -65,26 +68,32 @@ type AuthenticatedRequest = Request & { user: IUser };
 
 // ride cancel
 
-
 const rideRequest = async (req: Request, res: Response) => {
   const authReq = req as Request & { user: IUser };
 
   try {
-    const { destination, pickup } = req.body;
+    console.log(req.body);
+    const { current, destination } = req.body;
 
-    if (!destination || !pickup) {
+    if (!destination || !current) {
       return res.status(400).json({
         status: false,
         message: "Fill The Input Right Way",
       });
     }
 
-    const oneDriver = await User.findOne({ role: Role.DRIVER });
+    const oneDriver = await User.findOne({
+      role: Role.DRIVER,
+      availability_status: AvailabilityStatus.ONLINE,
+    }).sort({ createdAt: -1 });
 
-    if (!oneDriver || oneDriver.account_status === AccountStatus.BLOCK) {
+    console.log(oneDriver);
+
+    if (!oneDriver) {
       return res.status(404).json({
         status: false,
         message: "Not Founded Driver",
+        data: oneDriver,
       });
     }
 
@@ -94,9 +103,9 @@ const rideRequest = async (req: Request, res: Response) => {
       rider_id: id,
       driver_id: oneDriver._id,
       fare: 100,
-      location: pickup,
-      destination,
-      pick_up_location: pickup,
+      current: current,
+      destination: destination,
+
       payment_status: PaymentStatus.UNPAID,
       rider_status: RideStatus.PENDING,
       driver_status: DriverStatus.NONE,
@@ -115,7 +124,6 @@ const rideRequest = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 const rideCancel = async (req: Request, res: Response) => {
   const userId = req.params.id;
@@ -144,21 +152,18 @@ const rideCancel = async (req: Request, res: Response) => {
     }
 
     // if driver recive you can not cancel
-  
 
-    if(latestRide.driver_status===DriverStatus.ACCEPT){
+    if (latestRide.driver_status === DriverStatus.ACCEPT) {
       return res.status(400).json({
-        status:true,
-        message:"You Can Not Cancel Ride"
-      })
+        status: true,
+        message: "You Can Not Cancel Ride",
+      });
     }
 
-
-
     //  save
-    latestRide.rider_status=RideStatus.CANCELLED;
+    latestRide.rider_status = RideStatus.CANCELLED;
 
-      await latestRide.save();
+    await latestRide.save();
 
     return res.status(200).json({
       status: true,
@@ -183,7 +188,6 @@ const rideCancel = async (req: Request, res: Response) => {
 //     console.log(id, " me ");
 
 //     const allData = await Rides.find({ rider_id: id , rider_status:{$ne:RideStatus.CANCELLED} });
-
 
 //     console.log(id, allData);
 
@@ -221,7 +225,6 @@ const rideCancel = async (req: Request, res: Response) => {
 //   }
 // };
 
-
 const allRide = async (req: Request, res: Response) => {
   try {
     // Cast here to assert `user` exists on req
@@ -231,7 +234,10 @@ const allRide = async (req: Request, res: Response) => {
 
     console.log(id, " me ");
 
-    const allData = await Rides.find({ rider_id: id, rider_status: { $ne: RideStatus.CANCELLED } });
+    const allData = await Rides.find({
+      rider_id: id,
+      rider_status: { $ne: RideStatus.CANCELLED },
+    });
 
     console.log(id, allData);
 
@@ -267,7 +273,6 @@ const allRide = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 export const rideControllers = {
   rideRequest,

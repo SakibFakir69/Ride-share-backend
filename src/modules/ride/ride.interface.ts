@@ -34,18 +34,13 @@ export enum DriverStatus {
 }
 
 
-export interface ILocation {
-  lat: number;
-  lng: number;
-  address?: string;
-}
 
 export interface IRiderRequest {
   rider_id: string;
   driver_id?: string;
   fare: number;
-  location?: ILocation;
-    destination?: ILocation;
+  current?: string;
+    destination?: string;
   vehicle?: VehicleType;
   payment_status?: PaymentStatus;
   rider_status?: RideStatus;

@@ -25,14 +25,8 @@ const rideSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
     },
-    location: {
-        type: LocationSchema,
-        required: true,
-    },
-    destination: {
-        type: LocationSchema,
-        required: true,
-    },
+    current: { type: String, required: true }, // starting location
+    destination: { type: String, required: true },
     payment_status: {
         type: String,
         enum: Object.values(ride_interface_1.PaymentStatus),
@@ -46,10 +40,10 @@ const rideSchema = new mongoose_1.Schema({
         type: String,
         enum: Object.values(ride_interface_1.DriverStatus),
     },
-    pick_up_location: {
-        type: LocationSchema,
-        required: true,
-    },
+    // pick_up_location: {
+    //   type: LocationSchema,
+    //   required: true,
+    // },
     isCompleteRide: {
         type: Boolean,
         default: false,
@@ -59,6 +53,12 @@ const rideSchema = new mongoose_1.Schema({
         enum: Object.values(user_interface_1.AvailabilityStatus.ONLINE)
     }
 }, { timestamps: true });
+// rideSchema.pre('findOneAndUpdate', function(next){
+//   console.log("Pre save hook run");
+//   console.log(this.user);
+//   console.log(this);
+//   next();
+// })
 // pre save 
 // function driver ar details
 exports.Rides = (0, mongoose_1.model)("ride", rideSchema);

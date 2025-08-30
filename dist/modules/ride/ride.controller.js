@@ -63,18 +63,24 @@ const ride_interface_1 = require("./ride.interface");
 const rideRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const authReq = req;
     try {
-        const { destination, pickup } = req.body;
-        if (!destination || !pickup) {
+        console.log(req.body);
+        const { current, destination } = req.body;
+        if (!destination || !current) {
             return res.status(400).json({
                 status: false,
                 message: "Fill The Input Right Way",
             });
         }
-        const oneDriver = yield user_model_1.User.findOne({ role: user_interface_1.Role.DRIVER });
-        if (!oneDriver || oneDriver.account_status === user_interface_1.AccountStatus.BLOCK) {
+        const oneDriver = yield user_model_1.User.findOne({
+            role: user_interface_1.Role.DRIVER,
+            availability_status: user_interface_1.AvailabilityStatus.ONLINE,
+        }).sort({ createdAt: -1 });
+        console.log(oneDriver);
+        if (!oneDriver) {
             return res.status(404).json({
                 status: false,
                 message: "Not Founded Driver",
+                data: oneDriver,
             });
         }
         const id = authReq.user.id; // Now no TS error
@@ -82,9 +88,8 @@ const rideRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             rider_id: id,
             driver_id: oneDriver._id,
             fare: 100,
-            location: pickup,
-            destination,
-            pick_up_location: pickup,
+            current: current,
+            destination: destination,
             payment_status: ride_interface_1.PaymentStatus.UNPAID,
             rider_status: ride_interface_1.RideStatus.PENDING,
             driver_status: user_interface_1.DriverStatus.NONE,
@@ -127,7 +132,7 @@ const rideCancel = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         if (latestRide.driver_status === user_interface_1.DriverStatus.ACCEPT) {
             return res.status(400).json({
                 status: true,
-                message: "You Can Not Cancel Ride"
+                message: "You Can Not Cancel Ride",
             });
         }
         //  save
@@ -189,7 +194,10 @@ const allRide = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const authReq = req;
         const id = authReq.user.id;
         console.log(id, " me ");
-        const allData = yield ride_model_1.Rides.find({ rider_id: id, rider_status: { $ne: ride_interface_1.RideStatus.CANCELLED } });
+        const allData = yield ride_model_1.Rides.find({
+            rider_id: id,
+            rider_status: { $ne: ride_interface_1.RideStatus.CANCELLED },
+        });
         console.log(id, allData);
         if (!allData) {
             return res.status(404).json({

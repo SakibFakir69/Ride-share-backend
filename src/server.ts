@@ -6,6 +6,25 @@ import app from "./app";
 import { loadEnvVariable } from "./config/env";
 const PORT = loadEnvVariable().PORT;
 const DB_URL = loadEnvVariable().MONGODB_URL;
+import { Server } from "socket.io";
+
+import http from 'http'
+import cors from 'cors'
+const server = http.createServer(app);
+
+
+
+export const io = new Server(server,{
+
+  cors:{
+    origin:"*",
+    methods:['GET',"POST"]
+  }
+
+});
+
+
+
 
 
 
@@ -16,7 +35,7 @@ const DB_URL = loadEnvVariable().MONGODB_URL;
     await mongoose.connect(url);
     console.log("DB CONNECTED");
 
-     app.listen(PORT, () => {
+     server.listen(PORT, () => {
       console.log(`server runing on this port ${PORT}`);
     });
   } catch (error) {
@@ -34,5 +53,3 @@ const DB_URL = loadEnvVariable().MONGODB_URL;
 
 
 
-
-// server shoutdown proces

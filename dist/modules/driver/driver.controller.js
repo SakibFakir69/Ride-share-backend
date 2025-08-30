@@ -15,7 +15,7 @@ const user_model_1 = require("../user/user.model");
 const requestPermission = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     try {
-        const status = req.body;
+        const { driver_status } = req.body;
         if (!user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
@@ -30,13 +30,13 @@ const requestPermission = (req, res) => __awaiter(void 0, void 0, void 0, functi
             });
         }
         // mangae reject on rider
-        if (!status) {
+        if (!driver_status) {
             return res.status(400).json({
                 status: false,
                 message: "Accpet or Reject",
             });
         }
-        lastestDrive.driver_status = status.driver_status;
+        lastestDrive.driver_status = driver_status;
         yield lastestDrive.save();
         return res.status(201).json({
             status: true,
@@ -52,11 +52,44 @@ const requestPermission = (req, res) => __awaiter(void 0, void 0, void 0, functi
         });
     }
 });
+// lasted request
+const lastestRides = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ status: false, message: "Unauthorized" });
+        }
+        const userId = req.user.id;
+        const lastestRides = yield ride_model_1.Rides.findOne({
+            driver_id: userId,
+            isCompleteRide: false,
+        }).sort({ createdAt: -1 });
+        // bug here time related
+        console.log(lastestRides);
+        if (!lastestRides) {
+            return res.status(404).json({
+                status: false,
+                message: "No Rides Founded",
+            });
+        }
+        return res.status(200).json({
+            status: true,
+            message: "Got new rides",
+            data: lastestRides,
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            staus: false,
+            message: "No Current Ride founded",
+            error: error.stack,
+        });
+    }
+});
 const rideStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     try {
         const id = user === null || user === void 0 ? void 0 : user.id;
-        const status = yield ride_model_1.Rides.findOne({ driver_id: id }).sort({
+        const status = yield ride_model_1.Rides.findOne({ driver_id: id, isCompleteRide: false }).sort({
             createdAt: -1,
         });
         console.log(id, status);
@@ -74,7 +107,14 @@ const rideStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 message: "Input Your Status",
             });
         }
-        status.rider_status = status_update.rider_status;
+        // Update fields if they exist
+        if (status_update.rider_status) {
+            status.rider_status = status_update.rider_status;
+            // Automatically mark ride complete
+            if (status_update.rider_status === "COMPLETED") {
+                status.isCompleteRide = true;
+            }
+        }
         yield status.save();
         return res.status(201).json({
             status: true,
@@ -97,7 +137,7 @@ const earningHistory = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     try {
         const id = user.id;
-        const totalRidesDriver = yield ride_model_1.Rides.find({ driver_id: id });
+        const totalRidesDriver = yield ride_model_1.Rides.find({ driver_id: id, isCompleteRide: true });
         const earning_history = yield ride_model_1.Rides.aggregate([
             { $match: { driver_id: id } },
             { $group: { _id: id, totalEarning: { $sum: "$fare" } } },
@@ -155,9 +195,49 @@ const onlineStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
 });
+// ride history 
+const rideHistory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const sortBy = req.query.sortBy === "asc" ? 1 : -1;
+        const status = req.query.status; // optional filter
+        const filter = { driver_id: userId, isCompleteRide: true };
+        if (status)
+            filter.driver_status = status;
+        const totalDocument = yield ride_model_1.Rides.countDocuments(filter);
+        const totalPages = Math.ceil(totalDocument / limit);
+        const allRideByDriver = yield ride_model_1.Rides.find(filter)
+            .sort({ createdAt: sortBy })
+            .skip((page - 1) * limit)
+            .limit(limit);
+        return res.status(200).json({
+            status: true,
+            message: "All Driver Ride History Fetched",
+            data: allRideByDriver,
+            meta: {
+                totalPages,
+                page,
+                limit,
+                totalDocument,
+            },
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "No data found",
+            error: error.stack,
+        });
+    }
+});
 exports.driverController = {
     requestPermission,
     rideStatus,
     earningHistory,
     onlineStatus,
+    lastestRides,
+    rideHistory
 };

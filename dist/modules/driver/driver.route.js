@@ -11,4 +11,6 @@ router.patch('/request', CheckUserAuth_1.userAuth, UserRoleCheck_1.userRoleCheck
 router.patch('/ride/status', CheckUserAuth_1.userAuth, UserRoleCheck_1.userRoleCheck.driverCheck, driver_controller_1.driverController.rideStatus);
 router.get('/earning', CheckUserAuth_1.userAuth, UserRoleCheck_1.userRoleCheck.driverCheck, driver_controller_1.driverController.earningHistory);
 router.patch('/online-status', CheckUserAuth_1.userAuth, UserRoleCheck_1.userRoleCheck.driverCheck, driver_controller_1.driverController.onlineStatus);
+router.get('/lastest-ride', CheckUserAuth_1.userAuth, UserRoleCheck_1.userRoleCheck.driverCheck, driver_controller_1.driverController.lastestRides);
+router.get('/driver/ride-history', CheckUserAuth_1.userAuth, UserRoleCheck_1.userRoleCheck.driverCheck, driver_controller_1.driverController.rideHistory);
 exports.driverRoutes = router;
