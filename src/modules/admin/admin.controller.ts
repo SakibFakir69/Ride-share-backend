@@ -383,7 +383,6 @@ const rideVolume =async (req:Request , res:Response)=>{
   }
 }
 
-
 const revenuTrend = async (req:Request, res:Response)=>{
 
   try {
@@ -412,7 +411,6 @@ const revenuTrend = async (req:Request, res:Response)=>{
   }
 }
 
-
 const driverActivity = async (req: Request, res: Response) => {
   try {
     const stats = await Rides.aggregate([
@@ -437,6 +435,7 @@ const driverActivity = async (req: Request, res: Response) => {
 };
 
 
+
 export const adminController = {
   allDriver,
   allUser,
@@ -447,5 +446,4 @@ export const adminController = {
   driverActivity,
   rideVolume,
   revenuTrend
-
 };
