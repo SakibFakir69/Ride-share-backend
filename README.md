@@ -1,108 +1,53 @@
-Dive into the RideShare Backend, a vibrant and powerful API driving a cutting-edge ride-sharing platform. Crafted with Node.js, Express, TypeScript, and MongoDB, this backend delivers secure, scalable, and colorful APIs for riders, drivers, and admins to power a seamless ride-sharing adventure.
+ 🚗 Dive into the RideShare Backend, a vibrant and powerful API driving a cutting-edge ride-sharing platform. Crafted with Node.js, Express, TypeScript, and MongoDB, this backend delivers secure, scalable, and colorful APIs for riders, drivers, and admins to power a seamless ride-sharing adventure.
 
 
+# BackEnd Render Live Link :
+` https://ride-share-backend-jmx6.onrender.com/`
 
+🛣️ Rider API Endpoints
  
- Rider Api Endpoint
+| Description              | Method | Endpoint                              |
+| ------------------------ | ------ | ------------------------------------- |
+| Request a ride           | POST   | `/api/ride-share/ride/request`        |
+| Update ride status       | PATCH  | `/api/ride-share/ride/:rideId/status` |
+| Get current user's rides | GET    | `/api/ride-share/ride/me`             |
 
-Request a ride with pickup & destination location
-  Post  http://localhost:5000/api/ride-share/ride/request
-Patch  http://localhost:5000/api/ride-share/ride/688a2f009fe200d6c9e5b1ba/status
-Get    http://localhost:5000/api/ride-share/ride/me
+🚕 Driver API Endpoints
 
-
-Driver api EndPoint
-
-Accept/reject ride requests
-Patch http://localhost:5000/api/ride-share/drivers/request
-
-View earnings history
-GET  http://localhost:5000/api/ride-share/driver/earning
-
-
-Update ride status (Picked Up → In Transit → Completed)
-Patch   http://localhost:5000/api/ride-share/drivers/ride/status
-
-Set availability status (Online/Offline)
-Patch  http://localhost:5000/api/ride-share/drivers/online-status
-
-Admin Api Endpoint 
+| Description                                | Method | Endpoint                                |
+| ------------------------------------------ | ------ | --------------------------------------- |
+| Accept/reject ride requests                | PATCH  | `/api/ride-share/drivers/request`       |
+| View earnings history                      | GET    | `/api/ride-share/drivers/earning`        |
+| Update ride status (Picked Up → Completed) | PATCH  | `/api/ride-share/drivers/ride/status`   |
+| Set availability status (Online/Offline)   | PATCH  | `/api/ride-share/drivers/online-status` |
 
 
-` All Driver ` 
-" GET http://localhost:5000/api/ride-share/admin/all-driver"
-` All Rides ` 
-" GET http://localhost:5000/api/ride-share/admin/all-ride " 
-' all User '
-" GET http://localhost:5000/api/ride-share/admin/all-users " 
-` Approve/suspend drivers `
-" http://localhost:5000/api/ride-share/admin/drivers/approve/:id"
-
-` Block / Unblock ` 
-http://localhost:5000/api/ride-share/admin/block/:id
+🛡️ Admin API Endpoints
 
 
-
- 
-
-📜 Scripts
-
-
-
-
-
+| Description             | Method | Endpoint                                    |
+| ----------------------- | ------ | ------------------------------------------- |
+| Get all drivers         | GET    | `/api/ride-share/admin/all-driver`          |
+| Get all rides           | GET    | `/api/ride-share/admin/all-ride`            |
+| Get all users           | GET    | `/api/ride-share/admin/all-users`           |
+| Approve/suspend drivers | PATCH  | `/api/ride-share/admin/drivers/approve/:id` |
+| Block / Unblock users   | PATCH  | `/api/ride-share/admin/block/:id`           |
 
 
-Command
+📜 Script
 
-
-
-Description
-
-
-
-
-
-npm run dev
-
-
-
-Start server with auto-restart
-
-
-
-
-
-npm run lint
-
-
-
-Run ESLint for code quality
-
-
-
-
-
-npm test
-
-
-
-Placeholder for tests (TBD)
+| Command        | Description                    |
+| -------------- | ------------------------------ |
+| `npm run dev`  | Start server with auto-restart |
+| `npm run lint` | Run ESLint for code quality    |
+| `npm test`     | Placeholder for tests (TBD)    |
 
 
 
 🔐 Environment Variables
+Create a .env file in your project root with the following content:
 
 
-
-
-🔐 Environment Variables
-
-Create a .env file with:
-
-PORT=5000
+ PORT=5000
 MONGO_URI=mongodb://localhost:27017/rideshare
 JWT_SECRET=your_jwt_secret
-
-
-
