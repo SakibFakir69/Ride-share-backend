@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 const allowedOrigins = [
   "http://localhost:5173", // local dev
-  "https://ride-bha-2-2s04lf3pl-sakibfakirs-projects.vercel.app", // Vercel frontend
+"https://ride-bha-2-2s04lf3pl-sakibfakirs-projects.vercel.app",
   "https://ride-bhai.netlify.app" // Netlify frontend (if any)
 ];
 
