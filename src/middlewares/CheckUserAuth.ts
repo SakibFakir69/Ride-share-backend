@@ -26,7 +26,7 @@ export const userAuth = async (req: Request, res: Response, next: NextFunction) 
       "secrect_key"
     ) as JwtPayload;
 
-    (req as any).user = decodeToken.payload;
+    (req as any).user = decodeToken;
 
     next();
   } catch (error) {

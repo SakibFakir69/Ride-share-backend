@@ -73,40 +73,36 @@ const createUser = async (req: Request, res: Response) => {
     };
     const user = await User.create(newUser);
     
-      const payload = {
-        id: user?._id,
-        email: user?.email,
-        role: user?.role,
-       
-      };
-    
-      console.log(payload, " auth payload ");
-    
-      const accessToken = jwt.sign({ payload }, "secrect_key", {
-        expiresIn: "1d",
-      });
-      const refreshToken = jwt.sign({ payload }, "refresh_key", {
-        expiresIn: "7d",
-      });
-    
-      const token = {
-        accessToken,
-        refreshToken,
-      };
 
-    
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    };
 
-  
+    const accessToken = jwt.sign(payload, "secrect_key", { expiresIn: "1d" });
+    const refreshToken = jwt.sign(payload, "refresh_key", { expiresIn: "7d" });
 
-    
+    // Optional: set cookies
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
 
     res.status(201).json({
       status: true,
       message: "User Created Successfully!",
       data: user,
-      accessToken:token.accessToken,
-      refreshToken:token.refreshToken
+      accessToken,
+      refreshToken,
     });
+
   } catch (error: any) {
     console.log(error);
     res.status(500).json({
