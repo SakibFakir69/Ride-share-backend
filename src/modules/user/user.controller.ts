@@ -8,6 +8,7 @@
 import  { Request, Response } from "express";
 import {  regex, z } from "zod";
 import { User } from "./user.model";
+import jwt from 'jsonwebtoken'
 import {
   Account_status,
   AccountStatus,
@@ -65,20 +66,46 @@ const createUser = async (req: Request, res: Response) => {
         message: "faild to info validation",
       });
     }
-
     const hashPassword = await bcrpytjs.hash(result.password, 10);
-
-    const newUser = {
+      const newUser = {
       ...result,
       password: hashPassword,
     };
-
     const user = await User.create(newUser);
+    
+      const payload = {
+        id: user?._id,
+        email: user?.email,
+        role: user?.role,
+       
+      };
+    
+      console.log(payload, " auth payload ");
+    
+      const accessToken = jwt.sign({ payload }, "secrect_key", {
+        expiresIn: "1d",
+      });
+      const refreshToken = jwt.sign({ payload }, "refresh_key", {
+        expiresIn: "7d",
+      });
+    
+      const token = {
+        accessToken,
+        refreshToken,
+      };
+
+    
+
+  
+
+    
 
     res.status(201).json({
       status: true,
       message: "User Created Successfully!",
       data: user,
+      accessToken:token.accessToken,
+      refreshToken:token.refreshToken
     });
   } catch (error: any) {
     console.log(error);

@@ -23,9 +23,23 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json()); // plain text convert to json 
 app.use((0, cookie_parser_1.default)());
 // cors 
+const allowedOrigins = [
+    "http://localhost:5173", // local dev
+    "https://ride-bha-2-2s04lf3pl-sakibfakirs-projects.vercel.app",
+    "https://ride-bhai.netlify.app" // Netlify frontend (if any)
+];
 app.use((0, cors_1.default)({
-    origin: ['http://localhost:5173'],
-    credentials: true,
+    origin: function (origin, callback) {
+        if (!origin)
+            return callback(null, true); // allow Postman or server requests
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true // important for cookies
 }));
 // route
 app.use('/api/ride-share', routes_1.default);

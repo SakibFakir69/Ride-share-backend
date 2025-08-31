@@ -45,7 +45,7 @@ const logINUser = async (req: Request, res: Response) => {
     id: isUserxits?._id,
     email: isUserxits?.email,
     role: isUserxits?.role,
-    password: isUserxits?.password,
+  
   };
 
   console.log(payload, " auth payload ");
