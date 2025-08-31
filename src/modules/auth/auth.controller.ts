@@ -96,7 +96,7 @@ const logINUser = async (req: Request, res: Response) => {
       });
     }
 
-    const isHaspassword = await bcryptjs.compare(password, isUserExists.password);
+    const isHaspassword = await bcrpytjs.compare(password, isUserExists.password);
     if (!isHaspassword) {
       return res.status(400).json({
         status: false,

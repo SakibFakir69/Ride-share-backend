@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { User } from "../user/user.model";
 import {
   AccountStatus,
@@ -9,8 +9,9 @@ import {
 } from "../user/user.interface";
 import { Rides } from "./ride.model";
 import { PaymentStatus, RideStatus } from "./ride.interface";
-
-type AuthenticatedRequest = Request & { user: IUser };
+export interface AuthenticatedRequest extends Request {
+  user?: IUser;   // <-- make it optional
+}
 
 // const rideRequest = async (req:AuthenticatedRequest, res: Response) => {
 
@@ -274,8 +275,66 @@ const allRide = async (req: Request, res: Response) => {
   }
 };
 
+// payment
+const payment:RequestHandler = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { payment_status } = req.body;
+    const userID = req.user?.id;
+
+    if (!userID) {
+      return res.status(401).json({
+        status: false,
+        message: "Unauthorized request",
+      });
+    }
+
+    if (!Object.values(PaymentStatus).includes(payment_status)) {
+      return res.status(400).json({
+        status: false,
+        message: "Invalid payment status",
+      });
+    }
+
+    const newRide = await Rides.findOne({ rider_id: userID })
+  .sort({ createdAt: -1 })
+  .exec();
+    console.log(newRide , userID ,payment_status, "new ride");
+
+    if (!newRide) {
+      return res.status(404).json({
+        status: false,
+        message: "No ride found for user",
+      });
+    }
+
+    if (newRide.payment_status === PaymentStatus.UNPAID) {
+      newRide.payment_status = payment_status;
+      await newRide.save();
+
+      return res.status(201).json({
+        status: true,
+        message: "Payment successful",
+      });
+    }
+
+    return res.status(400).json({
+      status: false,
+      message: "Payment already completed or invalid status update",
+    });
+
+  } catch (error: any) {
+    console.error("Payment Error:", error);
+
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 export const rideControllers = {
   rideRequest,
   rideCancel,
   allRide,
+  payment
 };

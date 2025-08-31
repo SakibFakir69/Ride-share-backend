@@ -16,5 +16,6 @@ router.post(
 router.patch('/:id/status',userAuth,userRoleCheck.riderCheck,rideControllers.rideCancel)
 
 router.get('/me',userAuth , userRoleCheck.riderCheck,rideControllers.allRide);
+router.patch('/payment', userAuth, userRoleCheck.riderCheck, rideControllers.payment);
 
 export const useRiderRoute = router;
