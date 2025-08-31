@@ -16,7 +16,7 @@ app.use(express.json());  // plain text convert to json
 app.use(cookieParser());
 
 
-// cors 
+
 
 const allowedOrigins = [
   "http://localhost:5173", // local dev
